@@ -37,7 +37,9 @@ namespace DungeonGrinder {
         public event EventHandler<EventArgs> VisibleChanged;
 
         public void Draw(GameTime gameTime) {
+            spriteBatch.Begin();
             spriteBatch.Draw(backgroundTexture, gameFrame.GetRectangle(), backgroundColor);
+            spriteBatch.End();
         }
     }
 
@@ -69,17 +71,20 @@ namespace DungeonGrinder {
         public event EventHandler<EventArgs> VisibleChanged;
 
         public void Draw(GameTime gameTime) {
+            batch.Begin();
             // Left rectangle
-            batch.Draw(borderTexture, new Rectangle(frameRect.X, frameRect.Y, borderWidth, frameRect.Height + borderWidth), borderColor);
+            batch.Draw(borderTexture, new Rectangle(frameRect.X - borderWidth, frameRect.Y - borderWidth, borderWidth, frameRect.Height + borderWidth), borderColor);
             
             // Top rectangle
-            batch.Draw(borderTexture, new Rectangle(frameRect.X, frameRect.Y, frameRect.Width + borderWidth, borderWidth), borderColor);
+            batch.Draw(borderTexture, new Rectangle(frameRect.X, frameRect.Y - borderWidth, frameRect.Width + borderWidth, borderWidth), borderColor);
             
             // Right rectangle
             batch.Draw(borderTexture, new Rectangle(frameRect.X + frameRect.Width, frameRect.Y, borderWidth, frameRect.Height + borderWidth), borderColor);
             
             // Bottom rectangle
-            batch.Draw(borderTexture, new Rectangle(frameRect.X, frameRect.Y + frameRect.Height, frameRect.Width + borderWidth, borderWidth), borderColor);
+            batch.Draw(borderTexture, new Rectangle(frameRect.X - borderWidth, frameRect.Y + frameRect.Height, frameRect.Width + borderWidth, borderWidth), borderColor);
+
+            batch.End();
         }
     }
 
@@ -91,6 +96,10 @@ namespace DungeonGrinder {
         SpriteFont font;
         Color color;
         Vector2 position;
+        Rectangle bounds;
+        List<String> outputLines;
+        float textLineHight;
+        RasterizerState rasterizerState;
 
         int IDrawable.DrawOrder => throw new NotImplementedException();
 
@@ -102,6 +111,24 @@ namespace DungeonGrinder {
             this.text = text;
             this.font = font;
             this.color = color;
+            this.bounds = gameFrame.GetRectangle();
+
+            rasterizerState = new RasterizerState();
+            rasterizerState.ScissorTestEnable = true;
+
+            string[] words = text.Split(" ");
+            this.outputLines = new List<String>();
+            textLineHight = font.MeasureString("test").Y + 2;
+            string temp = "";
+            foreach (string word in words) {
+                if (font.MeasureString(temp + word + " ").X < this.bounds.Width) {
+                    temp += word + " ";
+                } else {
+                    temp += "\n";
+                    outputLines.Add(temp);
+                    temp = word + " ";
+                }
+            }
         }
 
         event EventHandler<EventArgs> IDrawable.DrawOrderChanged {
@@ -125,8 +152,18 @@ namespace DungeonGrinder {
         }
 
         public void Draw(GameTime gameTime) {
+            batch.Begin(rasterizerState: rasterizerState);
+            // Copy the original scissor value
+            Rectangle originalScissorRect = batch.GraphicsDevice.ScissorRectangle;
+
+            batch.GraphicsDevice.ScissorRectangle = bounds;
+
             Point framePt = gameFrame.GetRectangle().Location;
-            batch.DrawString(font, text, new Vector2(framePt.X + position.X, framePt.Y + position.Y), color);
+            for (int i = 0; i < outputLines.Count; i++) {
+                batch.DrawString(font, outputLines[i], new Vector2(framePt.X + position.X, framePt.Y + position.Y + (i * textLineHight)), color);
+            }
+
+            batch.End();
         }
     }
 }

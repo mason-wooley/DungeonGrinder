@@ -16,6 +16,7 @@ namespace DungeonGrinder {
         }
 
         protected override void Initialize() {
+            GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, 1200, 1200);
             base.Initialize();
         }
 
@@ -36,9 +37,7 @@ namespace DungeonGrinder {
         protected override void Draw(GameTime gameTime) {
             GraphicsDevice.Clear(Color.Black);
 
-            spriteBatch.Begin();
             gameFrameHandler.Draw(gameTime);
-            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
