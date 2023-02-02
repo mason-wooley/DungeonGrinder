@@ -82,4 +82,51 @@ namespace DungeonGrinder {
             batch.Draw(borderTexture, new Rectangle(frameRect.X, frameRect.Y + frameRect.Height, frameRect.Width + borderWidth, borderWidth), borderColor);
         }
     }
+
+    class TextBoxComponent : GameFrame.IFrameComponent, IDrawable {
+        public GameFrame gameFrame { get; }
+        public String text;
+
+        SpriteBatch batch;
+        SpriteFont font;
+        Color color;
+        Vector2 position;
+
+        int IDrawable.DrawOrder => throw new NotImplementedException();
+
+        bool IDrawable.Visible => throw new NotImplementedException();
+
+        public TextBoxComponent(GameFrame gameFrame, SpriteBatch batch, String text, SpriteFont font, Color color, Vector2 position) {
+            this.gameFrame = gameFrame;
+            this.batch = batch;
+            this.text = text;
+            this.font = font;
+            this.color = color;
+        }
+
+        event EventHandler<EventArgs> IDrawable.DrawOrderChanged {
+            add {
+                throw new NotImplementedException();
+            }
+
+            remove {
+                throw new NotImplementedException();
+            }
+        }
+
+        event EventHandler<EventArgs> IDrawable.VisibleChanged {
+            add {
+                throw new NotImplementedException();
+            }
+
+            remove {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void Draw(GameTime gameTime) {
+            Point framePt = gameFrame.GetRectangle().Location;
+            batch.DrawString(font, text, new Vector2(framePt.X + position.X, framePt.Y + position.Y), color);
+        }
+    }
 }

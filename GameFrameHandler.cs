@@ -81,6 +81,8 @@ namespace DungeonGrinder {
             // TODO: This can be different textures for more complex design
             Texture2D blankTexture = game.Content.Load<Texture2D>("Textures/blank");
 
+            SpriteFont font = game.Content.Load<SpriteFont>("Fonts/m20");
+
             // Add a GameFrame for the menu with a blue background
             GameFrame menuFrame = new GameFrame(new Point(100, 100), new Point(300, 200), GameFrame.FrameType.StartupFrame);
 
@@ -89,6 +91,9 @@ namespace DungeonGrinder {
 
             BorderComponent borderComponent = new BorderComponent(menuFrame, blankTexture, spriteBatch, Color.White, 5);
             menuFrame.addComponent<BorderComponent>(borderComponent);
+
+            TextBoxComponent textBoxComponent = new TextBoxComponent(menuFrame, spriteBatch, "Hello World", font, Color.Red, new Vector2(50, 50));
+            menuFrame.addComponent<TextBoxComponent>(textBoxComponent);
 
             AddNewFrame(menuFrame);
         }
