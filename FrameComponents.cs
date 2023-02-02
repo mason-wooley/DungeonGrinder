@@ -43,26 +43,21 @@ namespace DungeonGrinder {
 
     class BorderComponent : GameFrame.IFrameComponent, IDrawable {
         public GameFrame gameFrame { get; private set; }
-        Texture2D backgroundTexture;
-        Color backgroundColor;
+        Texture2D borderTexture;
+        Color borderColor;
         int borderWidth;
         public Boolean drawable { get; private set; }
         SpriteBatch batch;
+        Rectangle frameRect;
 
-        public BorderComponent(GameFrame gameFrame, Texture2D texture, int width) {
-            backgroundTexture = texture;
-            backgroundColor = Color.Transparent;
+        public BorderComponent(GameFrame gameFrame, Texture2D texture, SpriteBatch spriteBatch, Color color, int width) {
+            borderTexture = texture;
+            borderColor = color;
             drawable = true;
             this.gameFrame = gameFrame;
             borderWidth = width;
-        }
-
-        public BorderComponent(GameFrame gameFrame, Texture2D texture, Color color, int width) {
-            backgroundTexture = texture;
-            backgroundColor = color;
-            drawable = true;
-            this.gameFrame = gameFrame;
-            borderWidth = width;
+            batch = spriteBatch;
+            frameRect = gameFrame.GetRectangle();
         }
 
         public int DrawOrder => throw new NotImplementedException();
@@ -74,7 +69,17 @@ namespace DungeonGrinder {
         public event EventHandler<EventArgs> VisibleChanged;
 
         public void Draw(GameTime gameTime) {
-            batch.Draw(backgroundTexture, gameFrame.GetRectangle(), backgroundColor);
+            // Left rectangle
+            batch.Draw(borderTexture, new Rectangle(frameRect.X, frameRect.Y, borderWidth, frameRect.Height + borderWidth), borderColor);
+            
+            // Top rectangle
+            batch.Draw(borderTexture, new Rectangle(frameRect.X, frameRect.Y, frameRect.Width + borderWidth, borderWidth), borderColor);
+            
+            // Right rectangle
+            batch.Draw(borderTexture, new Rectangle(frameRect.X + frameRect.Width, frameRect.Y, borderWidth, frameRect.Height + borderWidth), borderColor);
+            
+            // Bottom rectangle
+            batch.Draw(borderTexture, new Rectangle(frameRect.X, frameRect.Y + frameRect.Height, frameRect.Width + borderWidth, borderWidth), borderColor);
         }
     }
 }

@@ -78,12 +78,19 @@ namespace DungeonGrinder {
         }
 
         public void Initialize() {
+            // TODO: This can be different textures for more complex design
             Texture2D blankTexture = game.Content.Load<Texture2D>("Textures/blank");
+
+            // Add a GameFrame for the menu with a blue background
             GameFrame menuFrame = new GameFrame(new Point(100, 100), new Point(300, 200), GameFrame.FrameType.StartupFrame);
+
             BackgroundComponent backgroundComponent = new BackgroundComponent(menuFrame, blankTexture, spriteBatch, Color.Blue);
             menuFrame.addComponent<BackgroundComponent>(backgroundComponent);
+
+            BorderComponent borderComponent = new BorderComponent(menuFrame, blankTexture, spriteBatch, Color.White, 5);
+            menuFrame.addComponent<BorderComponent>(borderComponent);
+
             AddNewFrame(menuFrame);
-            
         }
 
         public void Update(GameTime gameTime) {
